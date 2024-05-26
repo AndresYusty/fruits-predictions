@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificación de Frutas</title>
+</head>
+<body>
+    <h1>Clasificación de Frutas</h1>
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="uploadImage()">Subir y Clasificar</button>
+    <p id="result"></p>
+
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Por favor, seleccione un archivo de imagen.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://127.0.0.1:8080/model', true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        document.getElementById('result').innerText = `Predicción: ${response.description} (${response.fruit_name})`;
+                    } else {
+                        document.getElementById('result').innerText = 'Error en la clasificación de la imagen.';
+                    }
+                }
+            };
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
